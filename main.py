@@ -10,7 +10,7 @@ from sse_starlette.sse import EventSourceResponse
 # see llm.py to better understand the interaction with OpenAI's Chat Completion service.
 from llm import prompt_llm_async
 
-from ChatsHandler import ChatsHandler
+from handlers.chatsHandler import ChatsHandler
 
 app = FastAPI()
 

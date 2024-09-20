@@ -1,3 +1,7 @@
+import pickle
+import os
+from chat import Chat
+
 class ConversationHandler:
     def __init__(self, id):
         self.__saving_path = os.getcwd()+"/chats"
