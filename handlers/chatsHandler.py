@@ -2,6 +2,7 @@ import uuid
 import pickle
 import os
 from chat import Chat
+from conversationHandler import ConversationHandler
 
 class ChatsHandler:
     def __init__(self):
@@ -14,5 +15,6 @@ class ChatsHandler:
         id = str(uuid.uuid4())
         self.__chats.append(id)
         chat = Chat(id=id)
-        chat.saveChat()
+        handler = ConversationHandler()
+        handler.saveChat(chat)
         return id

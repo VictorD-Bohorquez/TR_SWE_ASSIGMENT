@@ -39,7 +39,7 @@ async def stream_example():
 @app.post("/start-chat")
 async def start_chat(id):
     chatID = chats.newChat()
-    return chatID
+    return {"Session":chatID}
 
 @app.post("/send-message")
 async def start_chat():
@@ -48,7 +48,3 @@ async def start_chat():
 @app.get("/get-full-conversation")
 async def start_chat():
     return "Yes"
-
-
-# Your code/routes here (you may also keep code in separate files and import/it them here):
-
