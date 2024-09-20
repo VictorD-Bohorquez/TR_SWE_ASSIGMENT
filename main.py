@@ -48,11 +48,9 @@ async def start_chat():
 @app.post("/send-message")
 async def send_message(conversation: ConversationMessage):
     handler = ConversationHandler()
-    #response = prompt_llm_async(conversation.message)
-    #answer = response.choices[0].message.content
-    #role = response.choices[0].message.role
-    answer = "This is, a test response"
-    role = "Assistant"
+    response = prompt_llm_async(conversation.message)
+    answer = response.choices[0].message.content
+    role = response.choices[0].message.role
     user_message = {"role": "user", "content": conversation.message}
     response_message = {"role": role, "content": answer}
     handler.addMessage(id= conversation.id, message= user_message)
