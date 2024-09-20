@@ -9,3 +9,6 @@ class Chat:
     
     def addMessage(self, message):
         self.__conversation.append(message)
+    
+    def getID(self):
+        return self.__id

@@ -1,14 +1,14 @@
 import uuid
 import pickle
 import os
-from chat import Chat
-from conversationHandler import ConversationHandler
+from .chat import Chat
+from .conversationHandler import ConversationHandler
 
 class ChatsHandler:
     def __init__(self):
-        self.__saving_path = os.getcwd()+"/chats"
+        self.__saving_path = str(os.getcwd())+"/chats"
         self.__chats = []
-         if not os.path.exists(self.__saving_path):
+        if not os.path.exists(self.__saving_path):
             os.makedirs(self.__saving_path)
 
     def newChat(self):

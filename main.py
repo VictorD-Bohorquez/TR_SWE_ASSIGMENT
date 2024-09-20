@@ -8,9 +8,12 @@ from fastapi import FastAPI
 from sse_starlette.sse import EventSourceResponse
 
 # see llm.py to better understand the interaction with OpenAI's Chat Completion service.
-from llm import prompt_llm_async
+from llm.llm import prompt_llm_async
 
 from handlers.chatsHandler import ChatsHandler
+from handlers.conversationHandler import ConversationHandler
+from dataModels.bodies import ConversationMessage, ConversationHistory
+from utilities.streamer import stream_response
 
 app = FastAPI()
 
@@ -37,14 +40,27 @@ async def stream_example():
     return EventSourceResponse(stream_tokens())
 
 @app.post("/start-chat")
-async def start_chat(id):
+async def start_chat():
     chatID = chats.newChat()
+    print(chatID)
     return {"Session":chatID}
 
 @app.post("/send-message")
-async def start_chat():
-    return "Yes"
+async def send_message(conversation: ConversationMessage):
+    handler = ConversationHandler()
+    #response = prompt_llm_async(conversation.message)
+    #answer = response.choices[0].message.content
+    #role = response.choices[0].message.role
+    answer = "This is, a test response"
+    role = "Assistant"
+    user_message = {"role": "user", "content": conversation.message}
+    response_message = {"role": role, "content": answer}
+    handler.addMessage(id= conversation.id, message= user_message)
+    handler.addMessage(id= conversation.id, message= response_message)
+    return EventSourceResponse(stream_response(answer))
 
 @app.get("/get-full-conversation")
-async def start_chat():
-    return "Yes"
+async def get_full_conversation(history: ConversationHistory):
+    handler = ConversationHandler()
+    conversation = handler.getChat(history.id)
+    return {"Conversation": conversation}
