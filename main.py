@@ -10,8 +10,11 @@ from sse_starlette.sse import EventSourceResponse
 # see llm.py to better understand the interaction with OpenAI's Chat Completion service.
 from llm import prompt_llm_async
 
+from ChatsHandler import ChatsHandler
+
 app = FastAPI()
 
+chats = ChatsHandler()
 
 @app.get("/stream-example")
 async def stream_example():
@@ -32,6 +35,20 @@ async def stream_example():
             yield token
 
     return EventSourceResponse(stream_tokens())
+
+@app.post("/start-chat")
+async def start_chat(id):
+    chatID = chats.newChat()
+    return chatID
+
+@app.post("/send-message")
+async def start_chat():
+    return "Yes"
+
+@app.get("/get-full-conversation")
+async def start_chat():
+    return "Yes"
+
 
 # Your code/routes here (you may also keep code in separate files and import/it them here):
 

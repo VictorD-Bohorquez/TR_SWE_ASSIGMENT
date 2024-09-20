@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from openai import OpenAI, Stream
 from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionUserMessageParam, \
     ChatCompletionChunk, ChatCompletionToolMessageParam, ChatCompletionAssistantMessageParam, \
@@ -8,11 +9,10 @@ from pydantic import BaseModel, Field
 OpenAIMessageType = (ChatCompletionSystemMessageParam | ChatCompletionUserMessageParam |
                      ChatCompletionAssistantMessageParam | ChatCompletionToolMessageParam |
                      ChatCompletionFunctionMessageParam)
-
+load_dotenv()
 
 client = OpenAI(
-    # Defaults to os.environ.get("OPENAI_API_KEY")
-    # Otherwise use: api_key="Your_API_Key",
+    #api_key=os.environ.get("OPENAI_API_KEY"),
 )
 
 class SarcasmDetection(BaseModel):
