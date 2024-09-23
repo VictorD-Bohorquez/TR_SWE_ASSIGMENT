@@ -25,5 +25,5 @@ async def stream_response(message: str) -> str:
 Utility Method to delete scritp tags in the inputs to avoid injection attacks and also prevent the API from being blocked from OpenAI API.
 """
 def sanitize_str(message: str) -> str:
-    sanitized_str = re.sub(r'<script\b[^>]*>(.*?)</script>', '', input_str, flags=re.IGNORECASE)
+    sanitized_str = re.sub(r'<script\b[^>]*>(.*?)</script>', '', message, flags=re.IGNORECASE)
     return sanitized_str

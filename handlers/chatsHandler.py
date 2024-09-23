@@ -16,10 +16,10 @@ class ChatsHandler:
         if not os.path.exists(self.__saving_path):
             os.makedirs(self.__saving_path)
 
-"""
-Method that creates a new Chat session using the conversation Handler.
-The chat ID is saved on the chat's array simulating the System's Cache.
-"""
+    """
+    Method that creates a new Chat session using the conversation Handler.
+    The chat ID is saved on the chat's array simulating the System's Cache.
+    """
     def newChat(self) -> str: 
         id = str(uuid.uuid4())
         self.__chats.append(id)
