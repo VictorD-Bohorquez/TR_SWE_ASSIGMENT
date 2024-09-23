@@ -13,52 +13,59 @@ from llm.llm import prompt_llm_async
 from handlers.chatsHandler import ChatsHandler
 from handlers.conversationHandler import ConversationHandler
 from dataModels.bodies import ConversationMessage, ConversationHistory
-from utilities.streamer import stream_response
+from utilities.utilities import stream_response, sanitize_str
 
 app = FastAPI()
 
 chats = ChatsHandler()
 
-@app.get("/stream-example")
-async def stream_example():
-    """
-    Example route for streaming text to the client, one word/token at a time.
-    """
-    async def stream_tokens():
-        """
-        Placeholder implementation for token streaming. Try running this route as-is to better understand how to
-        stream data using Server-Sent Events (SSEs) in FastAPI.
-        See this tutorial for more information: https://devdojo.com/bobbyiliev/how-to-use-server-sent-events-sse-with-fastapi
-        """
-        for token in ['hello', ', ', 'this ', 'is ', 'a ', 'streamed ', 'response.']:
-            # fake delay:
-            await asyncio.sleep(random.randint(0, 3))
-
-            print(f"Yielding token: {token}")
-            yield token
-
-    return EventSourceResponse(stream_tokens())
-
+"""
+Endpoint to start a new conversartion from scratch.
+"""
 @app.post("/start-chat")
+"""
+Create a new chat object and responds to the calle the session ID of that chat, for future references and conversation tracking and managing.
+"""
 async def start_chat():
     chatID = chats.newChat()
-    print(chatID)
     return {"Session":chatID}
 
+"""
+Endpoint to send messages to a created chat session.
+"""
 @app.post("/send-message")
+"""
+The conversation is read from the save files (Simulatuing a DB) then the user new message is sent with all the previous messages.
+Once the LLM replies it saves the original question and it's response in the chat file.
+The replies are sent with the  SSE mechanism.
+"""
 async def send_message(conversation: ConversationMessage):
-    handler = ConversationHandler()
-    response = prompt_llm_async(conversation.message)
-    answer = response.choices[0].message.content
-    role = response.choices[0].message.role
-    user_message = {"role": "user", "content": conversation.message}
-    response_message = {"role": role, "content": answer}
-    handler.addMessage(id= conversation.id, message= user_message)
-    handler.addMessage(id= conversation.id, message= response_message)
-    return EventSourceResponse(stream_response(answer))
+    if chats.availableChat(conversation.id):
+        user_message = sanitize_str(conversation.message)
+        handler = ConversationHandler()
+        previous_conversation = handler.readChat(conversation.id)
+        response = prompt_llm_async(user_message_content=user_message, existing_messages=previous_conversation.getConversation())
+        answer = response.choices[0].message.content
+        role = response.choices[0].message.role
+        user_message = {"role": "user", "content": conversation.message}
+        response_message = {"role": role, "content": answer}
+        handler.addMessage(id= conversation.id, message= user_message)
+        handler.addMessage(id= conversation.id, message= response_message)
+        return EventSourceResponse(stream_response(answer))
+    else:
+        return {"Error": "The required session is not available."}
 
+"""
+Endpoint to get the full conversation.
+"""
 @app.get("/get-full-conversation")
+"""
+The conversation is read from the save files (Simulatuing a DB) and all previous message are retrieved.
+"""
 async def get_full_conversation(history: ConversationHistory):
-    handler = ConversationHandler()
-    conversation = handler.getChat(history.id)
-    return {"Conversation": conversation}
+    if chats.availableChat(history.id):
+        handler = ConversationHandler()
+        conversation = handler.getChat(history.id)
+        return {"Conversation": conversation}
+    else:
+        return {"Error": "The required session is not available."}

@@ -150,7 +150,6 @@ if __name__ == '__main__':
     """
     import sys
     user_message_content = sys.argv[1]
-
     stream = prompt_llm(user_message_content=user_message_content)
     for chunk in stream:
         print(chunk.choices[0].delta.content)
