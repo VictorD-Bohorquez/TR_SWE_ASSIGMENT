@@ -44,12 +44,10 @@ async def send_message(conversation: ConversationMessage, response: Response):
     if chats.availableChat(conversation.id):
         user_message = sanitize_str(conversation.message)
         handler = ConversationHandler()
-        #previous_conversation = handler.readChat(conversation.id)
-        #response = prompt_llm_async(user_message_content=user_message, existing_messages=previous_conversation.getConversation())
-        #answer = response.choices[0].message.content
-        #role = response.choices[0].message.role
-        answer = "Hi, this is a test."
-        role= "assistant"
+        previous_conversation = handler.readChat(conversation.id)
+        response = prompt_llm_async(user_message_content=user_message, existing_messages=previous_conversation.getConversation())
+        answer = response.choices[0].message.content
+        role = response.choices[0].message.role
         user_message = {"role": "user", "content": conversation.message}
         response_message = {"role": role, "content": answer}
         handler.addMessage(id= conversation.id, message= user_message)
